@@ -1,93 +1,19 @@
+import cmath
 import datetime
+from cmath import pi as pi
+from math import cos as cos
+from math import sin as sin
+
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib.pyplot as plt
-from math import sin as sin
-from math import cos as cos
-import cmath
-from cmath import pi as pi
 
+from ft import dft as dft
+from ft import idft as idft
+from ft import fft as fft
+from ft import ifft as ifft
 
 func = lambda x: sin(3 * x) + cos(x)
-
-
-def dft(inner):
-    out = []
-    length = len(inner)
-
-    for m in range(length):
-        temp = complex(.0, .0)
-        for n in range(length):
-            arg = -2 * pi * m * n / length
-            temp = temp + complex(inner[n] * cos(arg), inner[n] * sin(arg))
-
-        out.append(temp)
-
-    return out
-
-def idft(inner):
-    out = []
-    length = len(inner)
-
-    for m in range(length):
-        temp = complex(.0, .0)
-        for n in range(length):
-            arg = 2 * pi * m * n / length
-            temp = temp + complex(inner[n] * cos(arg), inner[n] * sin(arg))
-
-        out.append(temp / length)
-
-    return out
-
-def _w(k, n):
-    if k % n == 0:
-        return 1
-    arg = -2 * pi * k / n
-    return complex(cos(arg), sin(arg))
-
-
-def fft(inner):
-    out = []
-    length = len(inner)
-
-    if(length == 2):
-        out.append((inner[0] + inner[1]) / length)
-        out.append((inner[0] - inner[1]) / length)
-
-    else:
-        even = [inner[x] for x in range(0, len(inner), 2)]
-        odd = [inner[x] for x in range(1, len(inner), 2)]
-
-        even = fft(even)
-        odd = fft(odd)
-
-        out = [None] * length
-        for i in range(0, int(length / 2)):
-            out[i] = even[i] + _w(i, length) * odd[i]
-            out[i + int(length / 2)] = even[i] - _w(i, length) * odd[i]
-    return out
-
-
-def ifft(inner):
-    out = []
-    length = len(inner)
-
-    if (length == 2):
-        out.append(inner[0] + inner[1])
-        out.append(inner[0] - inner[1])
-
-    else:
-        even = [inner[x] for x in range(0, len(inner), 2)]
-        odd = [inner[x] for x in range(1, len(inner), 2)]
-
-        even = fft(even)
-        odd = fft(odd)
-
-        out = [None] * length
-        for i in range(0, int(length / 2)):
-            out[i] = even[i] + _w(i, length).conjugate() * odd[i]
-            out[i + int(length / 2)] = even[i] - _w(i, length).conjugate() * odd[i]
-    return out
 
 def sampled(func, n):
     out = []
@@ -99,8 +25,7 @@ def sampled(func, n):
 with PdfPages('result.pdf') as pdf:
 
     N = 16
-
-    inner = sampled(func,N)
+    inner = sampled(func, N)
     spectrum = dft(inner)
 
     # DFT
@@ -109,52 +34,59 @@ with PdfPages('result.pdf') as pdf:
 
     plt.plot(x, y)
     plt.title('Inner signal')
+    plt.xlabel(r'$x$')
+    plt.ylabel(r'$y = f(x)$')
     pdf.savefig()
     plt.close()
 
     plt.plot(np.arange(N), inner, "b:o")
     plt.title('Sampled signal. N = 16')
+    plt.xlabel(r'$x$')
+    plt.ylabel(r'$y$')
     pdf.savefig()
     plt.close()
 
     plt.plot(np.arange(N), [cmath.polar(x)[0] for x in spectrum], "go")
     plt.title('DFT. Amplitude spectrum')
+    plt.xlabel(r'$f$')
     pdf.savefig()
     plt.close()
 
     plt.plot(np.arange(N), [cmath.polar(x)[1] for x in spectrum], "go")
     plt.title('DFT. Phase spectrum')
     pdf.savefig()
+    plt.xlabel(r'$f$')
     plt.close()
 
     plt.plot(np.arange(N),[x.real for x in idft(spectrum)], "r:o")
     plt.title('Inverse DFT')
+    plt.xlabel(r'$x$')
+    plt.ylabel(r'$y$')
     pdf.savefig()
     plt.close()
 
     #FFT
-
     spectrum = fft(inner)
 
     plt.plot(np.arange(N), [cmath.polar(x)[0] for x in spectrum], "go")
     plt.title('FFT. Amplitude spectrum')
     pdf.savefig()
+    plt.xlabel(r'$f$')
     plt.close()
 
     plt.plot(np.arange(N), [cmath.polar(x)[1] for x in spectrum], "go")
     plt.title('FFT. Phase spectrum')
+    plt.xlabel(r'$f$')
     pdf.savefig()
     plt.close()
 
     plt.plot(np.arange(N), [x.real for x in ifft(spectrum)], "r:o")
     plt.title('Inverse FFT')
+    plt.xlabel(r'$x$')
+    plt.ylabel(r'$y$')
     pdf.savefig()
     plt.close()
 
-
-
-
-    # We can also set the file's metadata via the PdfPages object:
     d = pdf.infodict()
     d['Title'] = 'Multipage PDF Example'
     d['Author'] = u'Jouni K. Sepp\xe4nen'
