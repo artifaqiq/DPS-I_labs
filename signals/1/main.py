@@ -51,8 +51,8 @@ def fft(inner):
     length = len(inner)
 
     if(length == 2):
-        out.append(inner[0] + inner[1])
-        out.append(inner[0] - inner[1])
+        out.append((inner[0] + inner[1]) / length)
+        out.append((inner[0] - inner[1]) / length)
 
     else:
         even = [inner[x] for x in range(0, len(inner), 2)]
@@ -69,7 +69,25 @@ def fft(inner):
 
 
 def ifft(inner):
-    pass
+    out = []
+    length = len(inner)
+
+    if (length == 2):
+        out.append(inner[0] + inner[1])
+        out.append(inner[0] - inner[1])
+
+    else:
+        even = [inner[x] for x in range(0, len(inner), 2)]
+        odd = [inner[x] for x in range(1, len(inner), 2)]
+
+        even = fft(even)
+        odd = fft(odd)
+
+        out = [None] * length
+        for i in range(0, int(length / 2)):
+            out[i] = even[i] + _w(i, length).conjugate() * odd[i]
+            out[i + int(length / 2)] = even[i] - _w(i, length).conjugate() * odd[i]
+    return out
 
 def sampled(func, n):
     out = []
@@ -128,7 +146,12 @@ with PdfPages('result.pdf') as pdf:
     pdf.savefig()
     plt.close()
 
-    
+    plt.plot(np.arange(N), [x.real for x in ifft(spectrum)], "r:o")
+    plt.title('Inverse FFT')
+    pdf.savefig()
+    plt.close()
+
+
 
 
     # We can also set the file's metadata via the PdfPages object:
