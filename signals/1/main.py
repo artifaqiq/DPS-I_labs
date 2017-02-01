@@ -1,5 +1,4 @@
 import cmath
-import datetime
 from cmath import pi as pi
 from math import cos as cos
 from math import sin as sin
@@ -12,16 +11,15 @@ from ft import dft as dft
 from ft import idft as idft
 from ft import fft as fft
 from ft import ifft as ifft
-import ft
 
 func = lambda x: sin(3 * x) + cos(x)
 
 import numpy.fft
 
-def sampled(func, n):
+def sampled(func, n, period=(2 * pi)):
     out = []
     for i in range(n):
-        out.append(func(2 * pi * (i + 1) / n))
+        out.append(func(period * (i + 1) / n))
 
     return out
 
@@ -29,6 +27,7 @@ with PdfPages('result.pdf') as pdf:
 
     N = 16
     inner = sampled(func, N)
+
     spectrum, iters_dft = dft(inner)
 
     # DFT
@@ -99,11 +98,15 @@ with PdfPages('result.pdf') as pdf:
             bbox={'facecolor': 'red', 'alpha': 0.5})
     ax.text(1, 7, 'FFT', style='italic',
             bbox={'facecolor': 'red', 'alpha': 0.5})
-    ax.text(2, 9, 'Iterations', style='italic',
+    ax.text(2, 9, 'Sums', style='italic',
+            bbox={'facecolor': 'gray', 'alpha': 0.5})
+    ax.text(3, 9, 'Muls', style='italic',
             bbox={'facecolor': 'gray', 'alpha': 0.5})
 
-    ax.text(2, 8, iters_dft, style='italic')
-    ax.text(2, 7, iters_fft, style='italic')
+    ax.text(2, 8, iters_dft[0], style='italic')
+    ax.text(3, 8, iters_dft[1], style='italic')
+    ax.text(2, 7, iters_fft[0], style='italic')
+    ax.text(3, 7, iters_fft[1], style='italic')
 
 
 
