@@ -12,8 +12,11 @@ from ft import dft as dft
 from ft import idft as idft
 from ft import fft as fft
 from ft import ifft as ifft
+import ft
 
 func = lambda x: sin(3 * x) + cos(x)
+
+import numpy.fft
 
 def sampled(func, n):
     out = []
@@ -26,10 +29,10 @@ with PdfPages('result.pdf') as pdf:
 
     N = 16
     inner = sampled(func, N)
-    spectrum = dft(inner)
+    spectrum, iters_dft = dft(inner)
 
     # DFT
-    x = np.arange(0, 2 * pi, 0.1);
+    x = np.arange(0, 2 * pi, 0.1)
     y = np.sin(3 * x) + np.cos(x)
 
     plt.plot(x, y)
@@ -66,7 +69,7 @@ with PdfPages('result.pdf') as pdf:
     plt.close()
 
     #FFT
-    spectrum = fft(inner)
+    spectrum, iters_fft = fft(inner)
 
     plt.plot(np.arange(N), [cmath.polar(x)[0] for x in spectrum], "go")
     plt.title('FFT. Amplitude spectrum')
@@ -80,17 +83,34 @@ with PdfPages('result.pdf') as pdf:
     pdf.savefig()
     plt.close()
 
-    plt.plot(np.arange(N), [x.real for x in ifft(spectrum)], "r:o")
+    plt.plot(np.arange(N), [x.real / N for x in ifft(spectrum)], "r:o")
     plt.title('Inverse FFT')
     plt.xlabel(r'$x$')
     plt.ylabel(r'$y$')
     pdf.savefig()
     plt.close()
 
-    d = pdf.infodict()
-    d['Title'] = 'Multipage PDF Example'
-    d['Author'] = u'Jouni K. Sepp\xe4nen'
-    d['Subject'] = 'How to create a multipage pdf file and set its metadata'
-    d['Keywords'] = 'PdfPages multipage keywords author title subject'
-    d['CreationDate'] = datetime.datetime(2009, 11, 13)
-    d['ModDate'] = datetime.datetime.today()
+    fig = plt.figure()
+    fig.suptitle('Сomplexity', fontsize=14, fontweight='bold')
+
+    ax = fig.add_subplot(111)
+
+    ax.text(1, 8, 'DFT', style='italic',
+            bbox={'facecolor': 'red', 'alpha': 0.5})
+    ax.text(1, 7, 'FFT', style='italic',
+            bbox={'facecolor': 'red', 'alpha': 0.5})
+    ax.text(2, 9, 'Iterations', style='italic',
+            bbox={'facecolor': 'gray', 'alpha': 0.5})
+
+    ax.text(2, 8, iters_dft, style='italic')
+    ax.text(2, 7, iters_fft, style='italic')
+
+
+
+
+
+    ax.axis([0, 10, 0, 10])
+
+    pdf.savefig()
+    plt.close()
+

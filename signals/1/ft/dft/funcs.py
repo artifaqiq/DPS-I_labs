@@ -4,6 +4,7 @@ from math import cos as cos
 
 def dft(inner):
     out = []
+    iters = 0
     length = len(inner)
 
     for m in range(length):
@@ -11,10 +12,11 @@ def dft(inner):
         for n in range(length):
             arg = -2 * pi * m * n / length
             temp = temp + complex(inner[n] * cos(arg), inner[n] * sin(arg))
+            iters = iters + 1
 
         out.append(temp)
 
-    return out
+    return (out,iters)
 
 def idft(inner):
     out = []
