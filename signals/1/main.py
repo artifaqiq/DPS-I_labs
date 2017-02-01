@@ -12,7 +12,7 @@ from ft import idft as idft
 from ft import fft as fft
 from ft import ifft as ifft
 
-func = lambda x: sin(3 * x) + cos(x)
+func = lambda x: sin(3 * x) + cos(x) # <--replace on your function
 
 import numpy.fft
 
@@ -25,13 +25,13 @@ def sampled(func, n, period=(2 * pi)):
 
 with PdfPages('result.pdf') as pdf:
 
-    N = 16
+    N = 16  # <--replace on your N
     inner = sampled(func, N)
 
     spectrum, iters_dft = dft(inner)
 
     # DFT
-    x = np.arange(0, 2 * pi, 0.1)
+    x = np.arange(0, 2 * pi, 0.1)  # <--replace on your function
     y = np.sin(3 * x) + np.cos(x)
 
     plt.plot(x, y)
@@ -107,10 +107,6 @@ with PdfPages('result.pdf') as pdf:
     ax.text(3, 8, iters_dft[1], style='italic')
     ax.text(2, 7, iters_fft[0], style='italic')
     ax.text(3, 7, iters_fft[1], style='italic')
-
-
-
-
 
     ax.axis([0, 10, 0, 10])
 
