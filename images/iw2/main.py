@@ -91,10 +91,11 @@ def idwt2(data, CL):
 
 data = dwt2(image, CL)
 
-for threshold in arange(0.05, 1.25, 0.1):
+for threshold in arange(0.05, 1.26, 0.1):
     data[abs(data) < threshold] = 0
-    image2 = Image.fromarray(idwt2(data, CL).astype(float64))
-    image2.save("image.compressed.threshold=" + str(threshold) + ".tiff")
+    image2 = Image.fromarray(idwt2(data, CL) * 255.0)
+    image2.convert('RGB').save("image.compressed.threshold=" + str(threshold) + ".jpeg")
+
 
 
 
